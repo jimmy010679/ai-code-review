@@ -13,6 +13,11 @@ async function main() {
     process.exit(1);
   }
 
+  if (!process.env.GEMINI_MODEL) {
+    console.error("❌ GEMINI_CODE_REVIEWER_MODEL 未設定");
+    process.exit(1);
+  }
+
   const diffPath = process.argv[2];
   if (!fs.existsSync(diffPath) || fs.readFileSync(diffPath, "utf-8").trim() === "") {
     console.log("沒有偵測到代碼變動，跳過 Review。");
@@ -24,7 +29,7 @@ async function main() {
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({ 
-    model: "gemini-2.5-flash-lite",
+    model: process.env.GEMINI_MODEL,
     systemInstruction: "你是一位資深前端 Leader，正審核系統的改動。請針對該專案最佳實踐提供精簡建議。"
   });
 
