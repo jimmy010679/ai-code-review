@@ -8,8 +8,8 @@ async function main() {
     process.exit(1);
   }
 
-  if (!process.env.GITHUB_TOKEN_SECRET) {
-    console.error("❌ GITHUB_TOKEN_SECRET 未設定");
+  if (!process.env.GITHUB_TOKEN) {
+    console.error("❌ GITHUB_TOKEN 未設定");
     process.exit(1);
   }
 
@@ -40,7 +40,7 @@ async function main() {
     fs.writeFileSync("comment.txt", commentBody);
     
     execSync(`gh pr comment ${process.env.PR_NUMBER} --body-file comment.txt`, {
-      env: { ...process.env, GH_TOKEN: process.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN_SECRET }
+      env: { ...process.env, GH_TOKEN: process.env.GITHUB_TOKEN }
     });
   } catch (error) {
     console.error("AI Review 失敗:", error);
