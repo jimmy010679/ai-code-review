@@ -4,30 +4,39 @@ const { execSync } = require("child_process");
 
 async function main() {
   const diffPath = process.argv[2];
-  if (!fs.existsSync(diffPath)) return;
+  if (!fs.existsSync(diffPath) || fs.readFileSync(diffPath, "utf-8").trim() === "") {
+    console.log("沒有偵測到代碼變動，跳過 Review。");
+    return;
+  }
+  
   const diff = fs.readFileSync(diffPath, "utf-8");
+  console.log("已讀取 Diff 內容，準備發送至 Gemini...");
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  // 建議先用 1.5-flash 確保穩定，2026 年後續可再切換 2.0 或更新版本
   const model = genAI.getGenerativeModel({ 
-    model: "gemini-2.5-flash-lite",
-    systemInstruction: "你是一位資深前端 Leader，正審核系統的改動。請針對該專案最佳實踐提供精簡建議。"
+    model: "gemini-1.5-flash",
+    systemInstruction: "你是一位資深前端 Lead。請針對 Diff 內容提供簡短且具體的改進建議（繁體中文）。"
   });
 
-  const prompt = `請審核以下 Git Diff 並提供 3 個關鍵建議：\n\n${diff}`;
-  
   try {
-    const result = await model.generateContent(prompt);
+    const result = await model.generateContent(`請審核以下改動：\n\n${diff}`);
     const feedback = result.response.text();
+    console.log("Gemini 回傳建議成功。");
 
-    // 透過 GitHub CLI 直接在 PR 留言 (GitHub Action Runner 內置 gh)
     const commentBody = `### 🤖 Gemini AI Code Review\n\n${feedback}`;
     fs.writeFileSync("comment.txt", commentBody);
     
+    // 使用 GitHub 內置的 gh 指令
+    console.log(`準備在 PR #${process.env.PR_NUMBER} 貼上回覆...`);
     execSync(`gh pr comment ${process.env.PR_NUMBER} --body-file comment.txt`, {
-      env: { ...process.env, GH_TOKEN: process.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN_SECRET }
+      stdio: 'inherit' // 這會讓 gh 的錯誤訊息直接印在 GitHub Action Log 裡
     });
+    console.log("PR 回覆貼上成功！");
+
   } catch (error) {
-    console.error("AI Review 失敗:", error);
+    console.error("執行過程中發生錯誤:", error);
+    process.exit(1); // 讓 Action 顯示失敗，方便除錯
   }
 }
 
