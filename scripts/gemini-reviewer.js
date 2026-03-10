@@ -13,8 +13,8 @@ async function main() {
     process.exit(1);
   }
 
-  if (!process.env.GEMINI_MODEL) {
-    console.error("❌ GEMINI_CODE_REVIEWER_MODEL 未設定");
+  if (!process.env.GEMINI_CODE_REVIEWER_MODEL) {
+    console.error("❌ GEMINI_MODEL 未設定");
     process.exit(1);
   }
 
@@ -29,7 +29,7 @@ async function main() {
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({ 
-    model: process.env.GEMINI_MODEL,
+    model: process.env.GEMINI_CODE_REVIEWER_MODEL,
     systemInstruction: "你是一位資深前端 Leader，正審核系統的改動。請針對該專案最佳實踐提供精簡建議。"
   });
 
