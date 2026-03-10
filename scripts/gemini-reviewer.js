@@ -3,6 +3,16 @@ const fs = require("fs");
 const { execSync } = require("child_process");
 
 async function main() {
+  if (!process.env.GEMINI_API_KEY) {
+    console.error("❌ GEMINI_API_KEY 未設定");
+    process.exit(1);
+  }
+
+  if (!process.env.GITHUB_TOKEN_SECRET) {
+    console.error("❌ GITHUB_TOKEN_SECRET 未設定");
+    process.exit(1);
+  }
+
   const diffPath = process.argv[2];
   if (!fs.existsSync(diffPath) || fs.readFileSync(diffPath, "utf-8").trim() === "") {
     console.log("沒有偵測到代碼變動，跳過 Review。");
