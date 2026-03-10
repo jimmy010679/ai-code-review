@@ -1,0 +1,44 @@
+name: Gemini AI Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # 必須有寫入權限才能貼 comment
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install @google/generative-ai
+
+      - name: Get PR Diff
+        id: diff
+        run: |
+          # 獲取 PR 的改動內容，排除非代碼或鎖定檔
+          git diff origin/${{ github.base_ref }}...HEAD -- . ':(exclude)package-lock.json' ':(exclude)*.md' > pr_diff.txt
+
+      - name: Run Gemini Review
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: node scripts/gemini-reviewer.js pr_diff.txt
+
+      - name: Upload Review Result (Optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-review-log
+          path: pr_diff.txt
