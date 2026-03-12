@@ -1,0 +1,44 @@
+name: PROD deployment
+run-name: ${{ github.actor }} is deploy PROD 🚀
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ready to flow check
+        run: |
+          echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+          echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v3'
+        with:
+          project_id: '${{ vars.GCP_PROJECT_ID }}'
+          workload_identity_provider: '${{ vars.GCP_WIF_PROVIDER }}'
+          service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
+  
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+  
+      - name: 'Verify Identity and Project'
+        run: |
+          echo "=== 目前啟用的身份 ==="
+          gcloud auth list
+          
+          echo "=== 目前專案配置 ==="
+          gcloud config get-value project
+
+      # 接下來你可以放真正的部署指令，例如：
+      # - name: 'Build and Push'
+      #   run: |
+      #     docker build -t ...
+      #     docker push ...
