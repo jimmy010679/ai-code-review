@@ -10,6 +10,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write # 必須有寫入權限才能貼 comment
+      checks: write       # 允許寫入測試檢查結
     steps:
       - uses: actions/checkout@v5
         with:
@@ -33,6 +34,8 @@ jobs:
       - name: Run Gemini Review
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_CODE_REVIEWER_MODEL: ${{ vars.GEMINI_CODE_REVIEWER_MODEL }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: node scripts/gemini-reviewer.js pr_diff.txt
 
