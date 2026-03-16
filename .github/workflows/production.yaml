@@ -42,8 +42,21 @@ jobs:
           echo "=== 目前專案配置 ==="
           gcloud config get-value project
 
-      # 接下來你可以放真正的部署指令，例如：
-      # - name: 'Build and Push'
-      #   run: |
-      #     docker build -t ...
-      #     docker push ...
+      - name: 'Log in to Artifact Registry'
+        run: |
+          gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: 'Build and Push Docker Image'
+        run: |
+          IMAGE_NAME="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GAR_REPO_NAME }}/${{ vars.CLOUD_RUN_SERVICE_NAME }}:${{ github.sha }}"
+          docker build -t "$IMAGE_NAME" .
+          docker push "$IMAGE_NAME"
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+
+      - name: 'Deploy to Cloud Run'
+        uses: 'google-github-actions/deploy-cloudrun@v2'
+        with:
+          service: '${{ vars.CLOUD_RUN_SERVICE_NAME }}'
+          region: '${{ vars.GCP_REGION }}'
+          image: '${{ env.IMAGE_NAME }}'
+          flags: '--allow-unauthenticated'
