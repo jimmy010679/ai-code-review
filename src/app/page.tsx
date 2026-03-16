@@ -5,6 +5,7 @@ export default function Home() {
     <div className={styles.page}>
       <h1>Hello</h1>
       <p>Jimmy Page.</p>
+      <p>123</p>
     </div>
   );
 }
