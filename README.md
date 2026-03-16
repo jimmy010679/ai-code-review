@@ -37,6 +37,26 @@
   2. **Artifact Registry (GAR)**: 將映像檔推送到 Google Cloud 存放庫。
   3. **Cloud Run**: 自動更新正式環境服務，並運行在 **Port 3000**。
 
+### 🔑 CI/CD 環境變數設定
+
+請在 GitHub Repository 的 `Settings > Secrets and variables > Actions` 中設定以下變數：
+
+#### **Repository Secrets (敏感資訊)**
+| 變數名稱 | 說明 |
+| :--- | :--- |
+| `GCP_SERVICE_ACCOUNT` | 用於部署的 Google Cloud 服務帳號 Email |
+| `GEMINI_API_KEY` | Google AI Studio 申請的 Gemini API 金鑰 |
+
+#### **Repository Variables (一般變數)**
+| 變數名稱 | 說明 |
+| :--- | :--- |
+| `GCP_PROJECT_ID` | Google Cloud 專案 ID |
+| `GCP_REGION` | 部署區域 (例如: `asia-east1`) |
+| `GCP_WIF_PROVIDER` | Workload Identity Provider 的完整路徑 |
+| `GAR_REPO_NAME` | Artifact Registry 儲存庫名稱 |
+| `CLOUD_RUN_SERVICE_NAME` | Cloud Run 服務名稱 |
+| `GEMINI_CODE_REVIEWER_MODEL` | AI 審查使用的模型名稱 (例如: `gemini-2.5-flash-lite`) |
+
 ---
 
 ## 💻 本地開發 (Local Development)
