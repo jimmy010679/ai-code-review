@@ -1,7 +1,12 @@
+node_modules
+.next
 .git
 .github
-node_modules
-scripts
+out
+build
 Dockerfile
 .dockerignore
 .gitignore
+.yarn/cache
+.yarn/install-state.gz
+README.md

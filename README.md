@@ -1,9 +1,9 @@
-# AI Code Review - 靜態網站部署
+# AI Code Review - Next.js Standalone
 
 ![PROD deployment](https://github.com/jimmy010679/ai-code-review/actions/workflows/production.yaml/badge.svg)
 ![Gemini AI Code Review](https://github.com/jimmy010679/ai-code-review/actions/workflows/ai-review.yml/badge.svg)
 
-本專案是一個基於 Nginx 的靜態網站，透過 Docker 進行容器化，自動部署至 Google Cloud Run，並整合了 Gemini AI 進行自動化的 Code Review。
+本專案是一個基於 **Next.js (Standalone 模式)** 的應用程式，透過 Docker 進行容器化，自動部署至 Google Cloud Run，並整合了 Gemini AI 進行自動化的 Code Review。
 
 ## 🚀 正式環境網址
 
@@ -33,34 +33,40 @@
 本專案使用 **GitHub Actions** 實現自動化：
 
 - **Production Deployment**:
-  1. **Docker Build**: 建置 Nginx 映像檔。
-  2. **Artifact Registry (GAR)**: 推送映像檔。
-  3. **Cloud Run**: 自動更新正式環境服務。
+  1. **Docker Build**: 使用多階段建置 (Multi-stage build) 產出最小化的 Next.js Standalone 映像檔。
+  2. **Artifact Registry (GAR)**: 將映像檔推送到 Google Cloud 存放庫。
+  3. **Cloud Run**: 自動更新正式環境服務，並運行在 **Port 3000**。
 
 ---
 
 ## 💻 本地開發 (Local Development)
 
-### 1. 建置本地映像檔
+### 1. 安裝與執行
 ```bash
+corepack enable
+yarn install
+yarn dev
+```
+
+### 2. Docker 本地測試
+```bash
+# 建置
 docker build -t ai-code-review .
-```
 
-### 2. 啟動容器
-```bash
-docker run -d -p 8080:80 --name ai-code-review-container ai-code-review
-```
+# 啟動 (對應至本地 3000 埠)
+docker run -d -p 3000:3000 --name ai-code-review-container ai-code-review
 
-### 3. 查看網頁
-打開瀏覽器造訪：[http://localhost:8080](http://localhost:8080)
+# 造訪 http://localhost:3000
+```
 
 ---
 
 ## 專案結構
 
-- `src/`: 存放靜態網頁原始碼。
+- `src/`: 存放應用程式原始碼。
 - `scripts/gemini-reviewer.js`: AI Code Review 的核心執行腳本。
 - `.github/workflows/`:
   - `production.yaml`: 正式環境自動化部署流程。
   - `ai-review.yml`: PR 自動化 AI 審查流程。
-- `Dockerfile`: Docker 映像檔建置設定。
+- `Dockerfile`: Next.js Standalone 多階段建置設定。
+- `next.config.ts`: 已開啟 `output: "standalone"` 以優化 Docker 映像檔。
