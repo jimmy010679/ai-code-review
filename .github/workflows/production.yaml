@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           clean: true
 
@@ -32,7 +32,7 @@ jobs:
           service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
   
       - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
+        uses: 'google-github-actions/setup-gcloud@v2'
   
       - name: 'Verify Identity and Project'
         run: |
@@ -54,7 +54,7 @@ jobs:
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
       - name: 'Deploy to Cloud Run'
-        uses: 'google-github-actions/deploy-cloudrun@v2'
+        uses: 'google-github-actions/deploy-cloudrun@v3'
         with:
           service: '${{ vars.CLOUD_RUN_SERVICE_NAME }}'
           region: '${{ vars.GCP_REGION }}'
