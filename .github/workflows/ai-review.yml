@@ -17,22 +17,23 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: '24'
-
-      - name: Enable Corepack
-        run: corepack enable
+          cache: 'yarn'
 
       - name: Install Dependencies
-        run: npm install @google/generative-ai
+        run: yarn add @google/generative-ai
 
       - name: Get PR Diff
         id: diff
         run: |
           # 獲取 PR 的改動內容，排除非代碼或鎖定檔
-          git diff origin/${{ github.base_ref }}...HEAD -- . ':(exclude)package-lock.json' ':(exclude)*.md' > pr_diff.txt
+          git diff origin/${{ github.base_ref }}...HEAD -- . ':(exclude)yarn.lock' ':(exclude)*.md' > pr_diff.txt
 
       - name: Run Gemini Review
         env:
