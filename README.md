@@ -1,4 +1,4 @@
-# AI Code Review - Next.js Standalone
+# 結合 Gemini API 自動化PR審查 與 GCP Cloud Run 自動化部署
 
 ![PROD deployment](https://github.com/jimmy010679/ai-code-review/actions/workflows/production.yaml/badge.svg)
 ![Gemini AI Code Review](https://github.com/jimmy010679/ai-code-review/actions/workflows/ai-review.yml/badge.svg)
