@@ -45,7 +45,7 @@ jobs:
 
       - name: Upload Review Result (Optional)
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ai-review-log
           path: pr_diff.txt
