@@ -9,12 +9,13 @@
   --button-secondary-hover: #f2f2f2;
   --button-secondary-border: #ebebeb;
 
-  display: flex;
   min-height: 100vh;
-  align-items: center;
-  justify-content: center;
-  align-content: center;
+  display: flex;
   flex-wrap: wrap;
+  place-content: center;
+  align-items: center;
+  flex-direction: column;
+
   font-family: var(--font-geist-sans);
   background-color: var(--background);
 
