@@ -24,7 +24,7 @@
 ### 相關設定
 若要啟用此功能，需在 GitHub Repository 中設定：
 - **Secrets**: `GEMINI_API_KEY` (從 Google AI Studio 取得)。
-- **Variables**: `GEMINI_CODE_REVIEWER_MODEL` (例如 `gemini-1.5-flash`)。
+- **Variables**: `GEMINI_CODE_REVIEWER_MODEL` (例如 `gemini-2.5-flash-lite`)。
 
 ---
 
@@ -45,7 +45,6 @@
 | 變數名稱 | 說明 |
 | :--- | :--- |
 | `GCP_SERVICE_ACCOUNT` | 用於部署的 Google Cloud 服務帳號 Email |
-| `GEMINI_API_KEY` | Google AI Studio 申請的 Gemini API 金鑰 |
 
 #### **Repository Variables (一般變數)**
 | 變數名稱 | 說明 |
@@ -55,7 +54,6 @@
 | `GCP_WIF_PROVIDER` | Workload Identity Provider 的完整路徑 |
 | `GAR_REPO_NAME` | Artifact Registry 儲存庫名稱 |
 | `CLOUD_RUN_SERVICE_NAME` | Cloud Run 服務名稱 |
-| `GEMINI_CODE_REVIEWER_MODEL` | AI 審查使用的模型名稱 (例如: `gemini-2.5-flash-lite`) |
 
 ---
 
