@@ -8,7 +8,7 @@
 ## 🚀 正式環境網址
 
 您可以造訪以下網址查看最新部署版本：
-**[https://ai-code-review-run-628326101026.asia-east1.run.app](https://ai-code-review-run-628326101026.asia-east1.run.app)**
+**[https://ai-code-review-cloud-run-628326101026.asia-east1.run.app/](https://ai-code-review-cloud-run-628326101026.asia-east1.run.app/)**
 
 ---
 
@@ -28,32 +28,36 @@
 
 ---
 
+## 🏗 基礎設施管理 (Infrastructure as Code)
+
+本專案的雲端基礎架構採用 **Terraform** 進行管理，相關配置位於 `gcp-infra-core/` 目錄中。這種方式確保了環境的可複製性與安全性。
+
+### 核心資源定義
+- **Artifact Registry (`google_artifact_registry_repository`)**: 存放 Docker 映像檔，並設有 `prevent_destroy` 以防止意外刪除。
+- **Cloud Run (`google_cloud_run_v2_service`)**: 執行 Next.js 應用程式。配置 `ignore_changes = [template[0].containers[0].image]`，讓 Terraform 只管理基礎設施，而實際的 Image 更新則交由 GitHub Actions 處理。
+- **Workload Identity Federation (WIF)**: 透過 GitHub OIDC 與 GCP 進行安全對接，捨棄傳統的 Service Account Key，提高安全性。
+
+### 資源與變數對照表
+若需重新配置或部署，請參考以下對應關係：
+
+| GitHub 變數名稱 | Terraform 資源/屬性 | 說明 |
+| :--- | :--- | :--- |
+| `GCP_PROJECT_ID` | `var.project_id` | GCP 專案編號 |
+| `GCP_REGION` | `var.region` | 部署區域 (預設: `asia-east1`) |
+| `GAR_REPO_NAME` | `ai-code-review-repo` | Artifact Registry 儲存庫 ID |
+| `CLOUD_RUN_SERVICE_NAME` | `ai-code-review-cloud-run` | Cloud Run 服務名稱 |
+| `GCP_WIF_PROVIDER` | `google_iam_workload_identity_pool_provider` | WIF Provider 的完整名稱 |
+| `GCP_SERVICE_ACCOUNT` | `tf-github-deployer@...` | 用於部署的 Service Account Email |
+
+---
+
 ## 🛠 CI/CD 流程
 
 本專案使用 **GitHub Actions** 實現自動化：
 
-- **Production Deployment**:
-  1. **Docker Build**: 使用多階段建置 (Multi-stage build) 產出最小化的 Next.js Standalone 映像檔。
-  2. **Artifact Registry (GAR)**: 將映像檔推送到 Google Cloud 存放庫。
-  3. **Cloud Run**: 自動更新正式環境服務，並運行在 **Port 3000**。
-
-### 🔑 CI/CD 環境變數設定
-
-請在 GitHub Repository 的 `Settings > Secrets and variables > Actions` 中設定以下變數：
-
-#### **Repository Secrets (敏感資訊)**
-| 變數名稱 | 說明 |
-| :--- | :--- |
-| `GCP_SERVICE_ACCOUNT` | 用於部署的 Google Cloud 服務帳號 Email |
-
-#### **Repository Variables (一般變數)**
-| 變數名稱 | 說明 |
-| :--- | :--- |
-| `GCP_PROJECT_ID` | Google Cloud 專案 ID |
-| `GCP_REGION` | 部署區域 (例如: `asia-east1`) |
-| `GCP_WIF_PROVIDER` | Workload Identity Provider 的完整路徑 |
-| `GAR_REPO_NAME` | Artifact Registry 儲存庫名稱 |
-| `CLOUD_RUN_SERVICE_NAME` | Cloud Run 服務名稱 |
+1. **基礎設施同步**: 修改 `gcp-infra-core` 後，手動或透過自動化工具執行 `terraform apply`。
+2. **Production Deployment**:
+   - ... (後續步驟同前)
 
 ---
 
@@ -82,6 +86,7 @@ docker run -d -p 3000:3000 --name ai-code-review-container ai-code-review
 ## 專案結構
 
 - `src/`: 存放應用程式原始碼。
+- `gcp-infra-core/`: Terraform 基礎設施配置（Artifact Registry, Cloud Run, WIF）。
 - `scripts/gemini-reviewer.js`: AI Code Review 的核心執行腳本。
 - `.github/workflows/`:
   - `production.yaml`: 正式環境自動化部署流程。
