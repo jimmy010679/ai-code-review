@@ -86,7 +86,6 @@ docker run -d -p 3000:3000 --name ai-code-review-container ai-code-review
 ## 專案結構
 
 - `src/`: 存放應用程式原始碼。
-- `gcp-infra-core/`: Terraform 基礎設施配置（Artifact Registry, Cloud Run, WIF）。
 - `scripts/gemini-reviewer.js`: AI Code Review 的核心執行腳本。
 - `.github/workflows/`:
   - `production.yaml`: 正式環境自動化部署流程。
