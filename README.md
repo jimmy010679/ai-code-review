@@ -23,8 +23,11 @@
 
 ### 相關設定
 若要啟用此功能，需在 GitHub Repository 中設定：
-- **Secrets**: `GEMINI_API_KEY` (從 Google AI Studio 取得)。
-- **Variables**: `GEMINI_CODE_REVIEWER_MODEL` (例如 `gemini-2.5-flash-lite`)。
+
+| 類型 | GitHub 變數名稱 | 來源 / 範例值 | 說明 |
+| :--- | :--- | :--- | :--- |
+| **Secrets** | `GEMINI_API_KEY` | Google AI Studio | 用於調用 Gemini API 的授權密鑰 |
+| **Variables** | `GEMINI_CODE_REVIEWER_MODEL` | `gemini-2.0-flash-lite` | 指定使用的 AI 模型版本 |
 
 ---
 
@@ -40,14 +43,14 @@
 ### 資源與變數對照表
 若需重新配置或部署，請參考以下對應關係：
 
-| GitHub 變數名稱 | Terraform 資源/屬性 | 說明 |
-| :--- | :--- | :--- |
-| `GCP_PROJECT_ID` | `var.project_id` | GCP 專案編號 |
-| `GCP_REGION` | `var.region` | 部署區域 (預設: `asia-east1`) |
-| `GAR_REPO_NAME` | `ai-code-review-repo` | Artifact Registry 儲存庫 ID |
-| `CLOUD_RUN_SERVICE_NAME` | `ai-code-review-cloud-run` | Cloud Run 服務名稱 |
-| `GCP_WIF_PROVIDER` | `google_iam_workload_identity_pool_provider` | WIF Provider 的完整名稱 |
-| `GCP_SERVICE_ACCOUNT` | `tf-github-deployer@...` | 用於部署的 Service Account Email |
+| 類型 | GitHub 變數名稱 | Terraform 資源 / 屬性 | 說明 |
+| :--- | :--- | :--- | :--- |
+| **Variables** | `GCP_PROJECT_ID` | `var.ai_code_review_project_id` | GCP 專案 ID |
+| **Variables** | `GCP_REGION` | `var.region` | 部署區域 (預設: `asia-east1`) |
+| **Variables** | `GAR_REPO_NAME` | `ai-code-review-repo` | Artifact Registry 儲存庫 ID |
+| **Variables** | `CLOUD_RUN_SERVICE_NAME` | `ai-code-review-cloud-run` | Cloud Run 服務名稱 |
+| **Variables** | `GCP_WIF_PROVIDER` | `google_iam_workload_identity_pool_provider` | WIF Provider 的完整名稱 |
+| **Secrets** | `GCP_SERVICE_ACCOUNT` | `tf-github-ai-reviewer@...` | 用於部署的專屬 Service Account Email |
 
 ---
 
