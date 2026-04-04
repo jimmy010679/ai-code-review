@@ -33,7 +33,7 @@
 
 ## 🏗 基礎設施管理 (Infrastructure as Code)
 
-本專案的雲端基礎架構採用 **Terraform** 進行管理，相關配置於另一個 `gcp-infra-core` 專案中 (目前為尚未公開)。這種方式確保了環境的可複製性與安全性。
+本專案的雲端基礎架構採用 **Terraform** 進行管理，相關配置於另一個 **[gcp-infra-core](https://github.com/jimmy010679/gcp-infra-core)** 專案中。這種方式確保了環境的可複製性與安全性。
 
 ### 核心資源定義
 - **Artifact Registry (`google_artifact_registry_repository`)**: 存放 Docker 映像檔，並設有 `prevent_destroy` 以防止意外刪除。
