@@ -50,7 +50,7 @@
 | **Variables** | `GAR_REPO_NAME` | `ai-code-review-repo` | Artifact Registry 儲存庫 ID |
 | **Variables** | `CLOUD_RUN_SERVICE_NAME` | `ai-code-review-cloud-run` | Cloud Run 服務名稱 |
 | **Variables** | `GCP_WIF_PROVIDER` | `google_iam_workload_identity_pool_provider` | WIF Provider 的完整名稱 |
-| **Secrets** | `GCP_SERVICE_ACCOUNT` | `tf-github-ai-reviewer@...` | 用於部署的專屬 Service Account Email |
+| **Variables** | `GCP_SERVICE_ACCOUNT` | `tf-github-ai-reviewer@...` | 用於部署的專屬 Service Account Email |
 
 ---
 
