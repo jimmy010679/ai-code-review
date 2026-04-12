@@ -1,0 +1,24 @@
+name: "🤖 AI 自動修復請求"
+description: "使用 Gemini 自動修復 Bug"
+title: "[Bug] 檔案路徑 - 簡述"
+labels: ["fix-me"]
+body:
+  - type: textarea
+    id: bug_desc
+    attributes:
+      label: "Bug 現象描述"
+      placeholder: "例如：首頁時間顯示不正確..."
+    validations:
+      required: true
+  - type: input
+    id: path
+    attributes:
+      label: "涉及檔案路徑"
+      placeholder: "src/app/page.tsx"
+    validations:
+      required: true
+  - type: input
+    id: expected
+    attributes:
+      label: "預期的正確結果"
+      placeholder: "2026/04/12"
