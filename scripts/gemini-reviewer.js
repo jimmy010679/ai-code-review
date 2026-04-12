@@ -1,6 +1,6 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-const fs = require("fs");
-const { execSync } = require("child_process");
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import fs from 'fs';
+import { execSync } from 'child_process';
 
 async function main() {
   if (!process.env.GEMINI_API_KEY) {
