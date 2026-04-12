@@ -8,6 +8,11 @@ jobs:
     if: github.event.label.name == 'fix-me'
     runs-on: ubuntu-latest
     timeout-minutes: 15 # 第一道保險：超過 15 分鐘強制關閉，防止 Runner 燒錢
+
+    permissions:
+      contents: write   # 允許推送代碼 (Branch)
+      pull-requests: write # 允許建立 PR
+      issues: read      # 允許讀取 Issue 內容
     
     steps:
       - name: Checkout Code
