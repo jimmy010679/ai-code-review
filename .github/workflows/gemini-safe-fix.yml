@@ -13,10 +13,24 @@ jobs:
       contents: write   # 允許推送代碼 (Branch)
       pull-requests: write # 允許建立 PR
       issues: read      # 允許讀取 Issue 內容
+
+    steps:
+      - name: Parse Target Branch from Issue Title
+        id: parse_branch
+        run: |
+          # 從標題解析格式如 [dev] 或 [uat] 的內容
+          # 邏輯：找第一個中括號內的文字，若無則預設為 main
+          TITLE="${{ github.event.issue.title }}"
+          TARGET_BRANCH=$(echo "$TITLE" | grep -oP '\[\K[^\]]+(?=\])' | head -1 || echo "main")
+          
+          echo "解析到的目標分支為: $TARGET_BRANCH"
+          echo "TARGET_BRANCH=$TARGET_BRANCH" >> $GITHUB_ENV
     
     steps:
       - name: Checkout Code
         uses: actions/checkout@v5
+        with:
+          ref: ${{ env.TARGET_BRANCH }} # 使用解析出的變數切換到對應分支
 
       - name: Setup Node.js 
         uses: actions/setup-node@v4
@@ -45,7 +59,7 @@ jobs:
             
             # 使用 Gemini 1.5 Flash 進行分析與修復
             # 改為要求通過 yarn lint 與 yarn build 驗證
-            if gemini -p "這是一個 Next.js 專案。請修復 Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}。修改完後必須確保 yarn lint 與 yarn build 都能通過。" --model "$GEMINI_AUTO_FIX_MODEL" --yolo; then
+            if gemini -p "這是一個 Next.js 專案。請針對 ${{ env.TARGET_BRANCH }} 分支修復 Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}。修改完後必須確保 yarn lint 與 yarn build 都能通過。" --model "$GEMINI_AUTO_FIX_MODEL" --yolo; then
               
               # 硬性檢查：確保編譯真的成功，防止代碼導致 Production 崩潰
               if yarn lint && yarn build; then
@@ -74,11 +88,13 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          base: ${{ env.TARGET_BRANCH }} # 將 PR 的目標指向解析出來的分支
           commit-message: "fix(ai): automatic fix for issue #${{ github.event.issue.number }}"
-          title: "AI 修復建議: ${{ github.event.issue.title }}"
+          title: "AI 修復建議 (${{ env.TARGET_BRANCH }}): ${{ github.event.issue.title }}"
           body: |
             ## AI 自動修復報告
             - **關聯問題**: #${{ github.event.issue.number }}
+            - **目標分支**: `${{ env.TARGET_BRANCH }}`
             - **驗證方式**: `yarn lint` & `yarn build` 已通過 ✅
             - **底層模型**: ${{ env.GEMINI_AUTO_FIX_MODEL }}
             
