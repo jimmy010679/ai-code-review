@@ -1,7 +1,8 @@
 # 結合 Gemini API 自動化PR審查 與 GCP Cloud Run 自動化部署
 
 ![PROD deployment](https://github.com/jimmy010679/ai-code-review/actions/workflows/production.yaml/badge.svg)
-![Gemini AI Code Review](https://github.com/jimmy010679/ai-code-review/actions/workflows/ai-review.yml/badge.svg)
+![Gemini - AI Code Review](https://github.com/jimmy010679/ai-code-review/actions/workflows/ai-review.yml/badge.svg)
+![Gemini - Issues Auto Fix](https://github.com/jimmy010679/ai-code-review/actions/workflows/gemini-safe-fix.yml/badge.svg)
 
 本專案是一個基於 **Next.js (Standalone 模式)** 的應用程式，透過 Docker 進行容器化，自動部署至 Google Cloud Run，並整合了 Gemini AI 進行自動化的 Issue Auto-Fix + Code Review。
 
