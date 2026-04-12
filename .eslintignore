@@ -1,4 +1,0 @@
-# 忽略自動化腳本目錄
-scripts/
-node_modules/
-.next/
