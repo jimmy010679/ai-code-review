@@ -1,7 +1,6 @@
 name: "🤖 AI 自動修復請求"
-description: "使用 Gemini 自動修復 Bug (支援 [dev], [uat] 等分支)"
-title: "檔案路徑 - 簡述"
-"[dev] 檔案路徑 - 簡述"
+description: "使用 Gemini 自動修復 Bug"
+title: "fix: "
 labels: ["fix-me"]
 body:
   - type: dropdown
@@ -27,8 +26,6 @@ body:
     attributes:
       label: "涉及檔案路徑"
       placeholder: "例如：src/app/page.tsx"
-    validations:
-      required: true
   - type: input
     id: expected
     attributes:
