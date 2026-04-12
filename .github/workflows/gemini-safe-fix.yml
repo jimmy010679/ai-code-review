@@ -109,5 +109,5 @@ jobs:
             - **底層模型**: ${{ env.GEMINI_AUTO_FIX_MODEL }}
             
             請在手機上檢查 Files Changed，確認邏輯無誤後即可合併。
-          branch: gemini-fix-${{ github.event.issue.number }}
+          branch: gemini-fix-${{ github.event.issue.number }}-${{ env.TARGET_BRANCH }}
           delete-branch: true
