@@ -1,6 +1,6 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-const fs = require("fs");
-const { execSync } = require("child_process");
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import fs from "fs";
+import { execSync } from "child_process";
 
 async function main() {
   if (!process.env.GEMINI_API_KEY) {
@@ -33,7 +33,9 @@ async function main() {
     systemInstruction: "你是一位資深前端 Leader，正審核系統的改動。請針對該專案最佳實踐提供精簡建議。"
   });
 
-  const prompt = `請審核以下 Git Diff 並提供 3 個關鍵建議：\n\n${diff}`;
+  const prompt = `請審核以下 Git Diff 並提供 3 個關鍵建議：
+
+${diff}`;
   
   try {
     const result = await model.generateContent(prompt);
@@ -41,7 +43,9 @@ async function main() {
     console.log("Gemini 回傳建議成功。");
 
     // 透過 GitHub CLI 直接在 PR 留言 (GitHub Action Runner 內置 gh)
-    const commentBody = `### 🤖 Gemini AI Code Review\n\n${feedback}`;
+    const commentBody = `### 🤖 Gemini AI Code Review
+
+${feedback}`;
     fs.writeFileSync("comment.txt", commentBody);
     
     execSync(`gh pr comment ${process.env.PR_NUMBER} --body-file comment.txt`, {
