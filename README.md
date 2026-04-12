@@ -3,7 +3,7 @@
 ![PROD deployment](https://github.com/jimmy010679/ai-code-review/actions/workflows/production.yaml/badge.svg)
 ![Gemini AI Code Review](https://github.com/jimmy010679/ai-code-review/actions/workflows/ai-review.yml/badge.svg)
 
-本專案是一個基於 **Next.js (Standalone 模式)** 的應用程式，透過 Docker 進行容器化，自動部署至 Google Cloud Run，並整合了 Gemini AI 進行自動化的 Code Review。
+本專案是一個基於 **Next.js (Standalone 模式)** 的應用程式，透過 Docker 進行容器化，自動部署至 Google Cloud Run，並整合了 Gemini AI 進行自動化的 Issue Auto-Fix + Code Review。
 
 ## 🚀 正式環境網址
 
@@ -16,7 +16,7 @@
 
 ### 1. 🛠️ AI Issue 自動修復 (Issue Auto-Fix)
 透過 GitHub Issues 觸發的 **Self-healing** 機制，實現「手機貼標籤，AI 發 PR」：
-- **環境感知 (Environment Aware)**：自動解析 Issue 標題中的分支標籤（如 `[dev]` 或 `[uat]`），動態切換代碼基線。
+- **環境感知 (Environment Aware)**：自動解析 Issue 目標修改分支，動態切換代碼基線。
 - **品質防線 (Quality Gates)**：AI 生成修復代碼後，強制通過 `yarn lint` 與 `yarn build` 驗證，確保 PR 具備可合併性。
 - **物理護欄 (Physical Guardrails)**：透過 Git 物理還原技術，強制保護 `.github/` 與 `scripts/` 目錄，防止 AI 竄改維運配置。
 
