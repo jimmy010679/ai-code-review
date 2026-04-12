@@ -18,21 +18,17 @@ jobs:
       - name: Parse Target Branch from Issue Body
         id: parse_branch
         run: |
-          # 邏輯說明：
-          # 1. 抓取 Issue Body 內容
-          # 2. 尋找「目標修復環境」標籤後的下一行內容
-          # 3. 使用 grep 或 awk 提取純文字
-          
           BODY="${{ github.event.issue.body }}"
           
-          # 這裡使用 grep 搜尋選單標題，並抓取其後的內容
-          # 註：GitHub Issue Form 的 Dropdown 在 Body 裡會呈現為：
-          # ### 🎯 目標修復環境 (Target Environment)
-          # dev
+          # 修改點：grep -A 2 抓取標題及其後兩行，並用 sed 過濾掉空白行
+          TARGET_BRANCH=$(echo "$BODY" | grep -A 2 "目標修復環境" | tail -n 1 | xargs)
           
-          TARGET_BRANCH=$(echo "$BODY" | grep -A 1 "目標修復環境" | tail -n 1 | xargs)
-          
-          # 安全檢查：若抓不到則預設 main
+          # 如果因為換行符號不同導致 tail -n 1 抓到空的，嘗試更強健的解析方式：
+          if [ -z "$TARGET_BRANCH" ] || [ "$TARGET_BRANCH" = "###" ]; then
+             TARGET_BRANCH=$(echo "$BODY" | grep -A 2 "目標修復環境" | grep -v "目標修復環境" | grep -v "^$" | head -n 1 | xargs)
+          fi
+
+          # 安全檢查
           if [ -z "$TARGET_BRANCH" ]; then
             TARGET_BRANCH="main"
           fi
