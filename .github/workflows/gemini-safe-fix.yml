@@ -18,21 +18,20 @@ jobs:
       - name: Parse Target Branch from Issue Body
         id: parse_branch
         run: |
-          BODY="${{ github.event.issue.body }}"
-          
-          # 修改點：grep -A 2 抓取標題及其後兩行，並用 sed 過濾掉空白行
-          TARGET_BRANCH=$(echo "$BODY" | grep -A 2 "目標修復環境" | tail -n 1 | xargs)
-          
-          # 如果因為換行符號不同導致 tail -n 1 抓到空的，嘗試更強健的解析方式：
-          if [ -z "$TARGET_BRANCH" ] || [ "$TARGET_BRANCH" = "###" ]; then
-             TARGET_BRANCH=$(echo "$BODY" | grep -A 2 "目標修復環境" | grep -v "目標修復環境" | grep -v "^$" | head -n 1 | xargs)
-          fi
+          # 1. 使用 HEREDOC 將 Body 安全地寫入臨時文件，避免 Shell 解析錯誤
+          cat << 'EOF' > issue_body.txt
+          ${{ github.event.issue.body }}
+          EOF
 
-          # 安全檢查
+          # 2. 從文件中解析目標分支
+          # grep -A 2 確保跳過空行，grep -v 排除標題與空行，xargs 清除前後空白
+          TARGET_BRANCH=$(grep -A 2 "目標修復環境" issue_body.txt | grep -v "目標修復環境" | grep -v "^$" | head -n 1 | xargs)
+
+          # 3. 安全檢查：若抓不到則預設 main
           if [ -z "$TARGET_BRANCH" ]; then
             TARGET_BRANCH="main"
           fi
-          
+
           echo "解析到的目標分支為: $TARGET_BRANCH"
           echo "TARGET_BRANCH=$TARGET_BRANCH" >> $GITHUB_ENV
 
