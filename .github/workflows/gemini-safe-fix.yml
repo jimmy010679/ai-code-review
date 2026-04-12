@@ -54,22 +54,33 @@ jobs:
           success=false
 
           while [ $attempt -le $MAX_RETRIES ]; do
-            echo "正在進行第 $attempt 次嘗試，使用模型: $GEMINI_AUTO_FIX_MODEL..."
+            echo "正在進行第 $attempt 次嘗試..."
             
-            # 使用 Gemini 1.5 Flash 進行分析與修復
-            # 改為要求通過 yarn lint 與 yarn build 驗證
-            if gemini -p "這是一個 Next.js 專案。請針對 ${{ env.TARGET_BRANCH }} 分支修復 Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}。修改完後必須確保 yarn lint 與 yarn build 都能通過。" --model "$GEMINI_AUTO_FIX_MODEL" --yolo; then
-              
-              # 硬性檢查：確保編譯真的成功，防止代碼導致 Production 崩潰
-              if yarn lint && yarn build; then
-                echo "修復成功且編譯通過！"
-                success=true
-                break
-              else
-                echo "AI 修復後 lint 或 build 失敗，準備重試..."
-              fi
+            # 1. 呼叫 Gemini：加入嚴格禁令
+            # 增加指令要求僅限修改 src/，且嚴禁修改腳本語法
+            gemini -p "這是一個 Next.js 專案。
+            請針對 ${{ env.TARGET_BRANCH }} 分支修復 Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}。
+            修改完後必須確保 yarn lint 與 yarn build 都能通過。
+
+            【任務目標】：
+            1. 根據 Issue 描述的預期結果進行代碼修改。
+            2. **修改後必須確保符合專案規範，使 yarn lint 與 yarn build 都能順利通過。**
+
+            【嚴格限制】：
+            1. 僅限修改 src/ 目錄下的檔案。
+            2. 絕對禁止修改 .github/ 或 scripts/ 目錄下的任何內容。" --model "$GEMINI_AUTO_FIX_MODEL" --yolo || true
+
+            # 2. 【核心保險】：不可改變的目錄
+            git checkout ${{ env.TARGET_BRANCH }} -- .github/ scripts/
+            echo "不可改變的目錄，防止 AI 竄改相關配置。"
+            
+            # 3. 驗證
+            if yarn lint && yarn build; then
+              echo "修復成功且編譯通過！"
+              success=true
+              break
             else
-              echo "Gemini 無法生成修復方案，重試中..."
+              echo "驗證失敗，準備重試..."
             fi
             
             attempt=$((attempt + 1))
