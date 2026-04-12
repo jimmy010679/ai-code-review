@@ -1,0 +1,83 @@
+name: Gemini Safe Bug Fixer
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  safe_fix:
+    if: github.event.label.name == 'fix-me'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15 # 第一道保險：超過 15 分鐘強制關閉，防止 Runner 燒錢
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js 
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.14.0'
+          cache: 'yarn'
+
+      - name: Enable Corepack & Install Dependencies
+        run: |
+          corepack enable
+          yarn install --immutable # CI 環境建議加上 --immutable 確保 yarn.lock 沒被意外變動
+
+      - name: Install Gemini CLI
+        run: npm install -g @google/gemini-cli
+
+      - name: Gemini Auto-Fix with Budget Control
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_AUTO_FIX_MODEL: '${{ vars.GEMINI_AUTO_FIX_MODEL }}'
+          MAX_RETRIES: 3 # 最多重試 3 次，控制 API 成本
+        run: |
+          attempt=1
+          success=false
+
+          while [ $attempt -le $MAX_RETRIES ]; do
+            echo "正在進行第 $attempt 次嘗試，使用模型: $GEMINI_AUTO_FIX_MODEL..."
+            
+            # 使用 Gemini 1.5 Flash 進行分析與修復
+            # 改為要求通過 yarn lint 與 yarn build 驗證
+            if gemini -p "這是一個 Next.js 專案。請修復 Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}。修改完後必須確保 yarn lint 與 yarn build 都能通過。" --model "$GEMINI_AUTO_FIX_MODEL" --yolo; then
+              
+              # 硬性檢查：確保編譯真的成功，防止代碼導致 Production 崩潰
+              if yarn lint && yarn build; then
+                echo "修復成功且編譯通過！"
+                success=true
+                break
+              else
+                echo "AI 修復後 lint 或 build 失敗，準備重試..."
+              fi
+            else
+              echo "Gemini 無法生成修復方案，重試中..."
+            fi
+            
+            attempt=$((attempt + 1))
+          done
+
+          if [ "$success" = true ]; then
+            echo "SUCCESS=true" >> $GITHUB_ENV
+          else
+            echo "修復失敗，已達重試上限。請手動檢查 Issue 或 Log。"
+            exit 1
+          fi
+
+      - name: Create Pull Request
+        if: env.SUCCESS == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "fix(ai): automatic fix for issue #${{ github.event.issue.number }}"
+          title: "AI 修復建議: ${{ github.event.issue.title }}"
+          body: |
+            ## AI 自動修復報告
+            - **關聯問題**: #${{ github.event.issue.number }}
+            - **驗證方式**: `yarn lint` & `yarn build` 已通過 ✅
+            - **底層模型**: ${{ env.GEMINI_AUTO_FIX_MODEL }}
+            
+            請在手機上檢查 Files Changed，確認邏輯無誤後即可合併。
+          branch: gemini-fix-${{ github.event.issue.number }}
+          delete-branch: true
