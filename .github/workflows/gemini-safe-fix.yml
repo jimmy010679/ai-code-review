@@ -15,13 +15,27 @@ jobs:
       issues: read      # 允許讀取 Issue 內容
 
     steps:
-      - name: Parse Target Branch from Issue Title
+      - name: Parse Target Branch from Issue Body
         id: parse_branch
         run: |
-          # 從標題解析格式如 [dev] 或 [uat] 的內容
-          # 邏輯：找第一個中括號內的文字，若無則預設為 main
-          TITLE="${{ github.event.issue.title }}"
-          TARGET_BRANCH=$(echo "$TITLE" | grep -oP '\[\K[^\]]+(?=\])' | head -1 || echo "main")
+          # 邏輯說明：
+          # 1. 抓取 Issue Body 內容
+          # 2. 尋找「目標修復環境」標籤後的下一行內容
+          # 3. 使用 grep 或 awk 提取純文字
+          
+          BODY="${{ github.event.issue.body }}"
+          
+          # 這裡使用 grep 搜尋選單標題，並抓取其後的內容
+          # 註：GitHub Issue Form 的 Dropdown 在 Body 裡會呈現為：
+          # ### 🎯 目標修復環境 (Target Environment)
+          # dev
+          
+          TARGET_BRANCH=$(echo "$BODY" | grep -A 1 "目標修復環境" | tail -n 1 | xargs)
+          
+          # 安全檢查：若抓不到則預設 main
+          if [ -z "$TARGET_BRANCH" ]; then
+            TARGET_BRANCH="main"
+          fi
           
           echo "解析到的目標分支為: $TARGET_BRANCH"
           echo "TARGET_BRANCH=$TARGET_BRANCH" >> $GITHUB_ENV

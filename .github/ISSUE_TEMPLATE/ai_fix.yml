@@ -1,12 +1,20 @@
 name: "🤖 AI 自動修復請求"
 description: "使用 Gemini 自動修復 Bug (支援 [dev], [uat] 等分支)"
-title: "[main] 檔案路徑 - 簡述" 
+title: "檔案路徑 - 簡述"
+"[dev] 檔案路徑 - 簡述"
 labels: ["fix-me"]
 body:
-  - type: markdown
+  - type: dropdown
+    id: target_env
     attributes:
-      value: |
-        > **💡 溫馨提醒**：請在標題最前方保留 `[分支名稱]` (例如 `[dev]` 或 `[uat]`)，系統將根據此標籤自動切換代碼基線。
+      label: "🎯 目標修復環境 (Target Environment)"
+      description: "請選擇 AI 應該在哪個分支進行修復"
+      options:
+        - dev
+        - uat
+        - main
+    validations:
+      required: true
   - type: textarea
     id: bug_desc
     attributes:
