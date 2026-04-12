@@ -26,8 +26,9 @@ body:
     attributes:
       label: "涉及檔案路徑"
       placeholder: "例如：src/app/page.tsx"
-  - type: input
+  - type: textarea
     id: expected
     attributes:
       label: "預期的正確結果"
-      placeholder: "例如：2026/04/12"
+      placeholder: "例如：將 2026/04/02 改為 2026/04/12，並確保文字顏色為紅色"
+      render: "markdown" # 這樣你甚至可以在裡面貼代碼塊
