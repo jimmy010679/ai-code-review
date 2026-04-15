@@ -40,15 +40,17 @@ jobs:
         with:
           ref: ${{ env.TARGET_BRANCH }} # 使用解析出的變數切換到對應分支
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node.js 
         uses: actions/setup-node@v5
         with:
           node-version: '24.14.0'
           cache: 'yarn'
 
-      - name: Enable Corepack & Install Dependencies
+      - name: Install Dependencies
         run: |
-          corepack enable
           yarn install --immutable # CI 環境建議加上 --immutable 確保 yarn.lock 沒被意外變動
 
       - name: Install Gemini CLI
