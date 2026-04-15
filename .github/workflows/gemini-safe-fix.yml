@@ -41,7 +41,7 @@ jobs:
           ref: ${{ env.TARGET_BRANCH }} # 使用解析出的變數切換到對應分支
 
       - name: Setup Node.js 
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24.14.0'
 
@@ -104,7 +104,7 @@ jobs:
 
       - name: Create Pull Request
         if: env.SUCCESS == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: ${{ env.TARGET_BRANCH }} # 將 PR 的目標指向解析出來的分支
