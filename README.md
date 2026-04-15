@@ -98,10 +98,16 @@ docker run -d -p 3000:3000 --name ai-code-review-container ai-code-review
 
 ## 專案結構
 
-- `src/`: 存放應用程式原始碼。
-- `scripts/gemini-reviewer.js`: AI Code Review 的核心執行腳本。
-- `.github/workflows/`:
-  - `production.yaml`: 正式環境自動化部署流程。
-  - `ai-review.yml`: PR 自動化 AI 審查流程。
-- `Dockerfile`: Next.js Standalone 多階段建置設定。
-- `next.config.ts`: 已開啟 `output: "standalone"` 以優化 Docker 映像檔。
+```text
+.
+├── .github/workflows/       # 自動化流水線定義
+│   ├── dproduction.yaml     # 正式環境自動化部署流程
+│   ├── ai-review.yml        # Gemini PR 自動化審查
+│   └── gemini-safe-fix.yml  # AI 問題分析與自動修復 PR
+├── scripts/                 # AI 核心邏輯
+│   └── gemini-reviewer.js   # AI Code Review 核心執行腳本 (Gemini API)
+├── src/                     # Next.js 應用程式原始碼
+├── Dockerfile               # 多階段建置設定 (Standalone Mode)
+├── next.config.ts           # Next.js 配置 (已開啟 standalone 優化)
+└── README.md                # 專案說明文件
+```
