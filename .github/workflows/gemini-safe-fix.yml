@@ -46,8 +46,9 @@ jobs:
           node-version: '24.14.0'
           cache: 'yarn'
 
-      - name: Install Dependencies
+      - name: Enable Corepack & Install Dependencies
         run: |
+          corepack enable
           yarn install --immutable # CI 環境建議加上 --immutable 確保 yarn.lock 沒被意外變動
 
       - name: Install Gemini CLI
